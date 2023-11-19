@@ -2,29 +2,30 @@
 
 [ext_resource type="PackedScene" uid="uid://dp0r43r81em43" path="res://Scenes/Player.tscn" id="1_hg3vi"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_vpr7s"]
-size = Vector3(10, 1, 10)
+[sub_resource type="SphereShape3D" id="SphereShape3D_tlsfm"]
+radius = 5.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_gsu6b"]
-size = Vector3(10, 1, 10)
+[sub_resource type="SphereMesh" id="SphereMesh_nkok4"]
+radius = 5.0
+height = 10.0
 
 [node name="Main" type="Node"]
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.821149, 0.570714, 0, -0.570714, 0.821149, 0, 3.17951, 4.60252)
+transform = Transform3D(1, 0, 0, 0, 0.788011, 0.615662, 0, -0.615662, 0.788011, 0, 6.677, 8.827)
 
 [node name="Ground" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 collision_layer = 2
 collision_mask = 0
 
 [node name="Collider" type="CollisionShape3D" parent="Ground"]
-shape = SubResource("BoxShape3D_vpr7s")
+shape = SubResource("SphereShape3D_tlsfm")
 
 [node name="Model" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("BoxMesh_gsu6b")
+mesh = SubResource("SphereMesh_nkok4")
 
 [node name="Player" parent="." instance=ExtResource("1_hg3vi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0)
