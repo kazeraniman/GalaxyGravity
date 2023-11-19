@@ -1,26 +1,26 @@
 extends CharacterBody3D
 
-@export var speed : float = 5
-@export var jump_impulse : float = 5
-@export var gravity : float = 9.8
+@export var speed: float = 5
+@export var jump_impulse: float = 5
+@export var gravity_field: GravityField
 
-var gravity_vector : Vector3 = Vector3.DOWN
+var gravity_vector: Vector3 = Vector3.DOWN
 
 func _physics_process(delta):
 	# Check directional inputs
-	var forwardStrength : float = Input.get_action_strength("move_forward")
-	var backwardStrength : float = Input.get_action_strength("move_backward")
-	var leftStrength : float = Input.get_action_strength("move_left")
-	var rightStrength : float = Input.get_action_strength("move_right")
+	var forwardStrength: float = Input.get_action_strength("move_forward")
+	var backwardStrength: float = Input.get_action_strength("move_backward")
+	var leftStrength: float = Input.get_action_strength("move_left")
+	var rightStrength: float = Input.get_action_strength("move_right")
 
 	# Determine gravity and normal
-	var old_gravity_vector : Vector3 = gravity_vector
-	gravity_vector = (Vector3.ZERO - position).normalized()
-	var normal_vector : Vector3 = -gravity_vector
+	var old_gravity_vector: Vector3 = gravity_vector
+	gravity_vector = gravity_field.get_gravity(position)
+	var normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = normal_vector
 
 	# Determine the "ground" movement direction
-	var direction : Vector3 = Vector3.ZERO
+	var direction: Vector3 = Vector3.ZERO
 	if forwardStrength > 0:
 		direction.z -= forwardStrength
 	if backwardStrength > 0:
@@ -39,14 +39,14 @@ func _physics_process(delta):
 		$ModelContainer.rotation.y = Vector3.FORWARD.signed_angle_to(direction, Vector3.UP)
 
 	# Rotate with respect to gravity
-	var rotation_axis : Vector3 = (Vector3.UP.cross(normal_vector)).normalized()
-	var rotation_angle : float = Vector3.UP.angle_to(normal_vector)
+	var rotation_axis: Vector3 = (Vector3.UP.cross(normal_vector)).normalized()
+	var rotation_angle: float = Vector3.UP.angle_to(normal_vector)
 	if (rotation_axis != Vector3.ZERO):
 		direction = direction.rotated(rotation_axis, rotation_angle).normalized()
 		transform.basis = Basis(rotation_axis, rotation_angle)
 
 	# Determine the scaled, ground velocity
-	var new_velocity : Vector3 = direction * speed
+	var new_velocity: Vector3 = direction * speed
 
 	# Retain gravity's influence
 	new_velocity += velocity.project(old_gravity_vector)
@@ -56,7 +56,7 @@ func _physics_process(delta):
 		new_velocity += jump_impulse * normal_vector
 
 	# Gravity
-	new_velocity += gravity * delta * gravity_vector
+	new_velocity += delta * gravity_vector
 
 	# Move and perform collisions
 	velocity = new_velocity

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0lql4w8im2f5"]
+
+[ext_resource type="Script" path="res://Scripts/GravityFields/SphericalGravityField.gd" id="1_pwy2n"]
+
+[node name="SphericalGravityField" type="Node3D"]
+script = ExtResource("1_pwy2n")
