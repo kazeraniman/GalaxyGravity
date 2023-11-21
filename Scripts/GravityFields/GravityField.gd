@@ -3,6 +3,7 @@ extends Node3D
 class_name GravityField
 
 @export var gravity: float = 9.8
+@export var priority: int = 0
 
 
 func _ready():

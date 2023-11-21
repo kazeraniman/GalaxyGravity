@@ -4,7 +4,8 @@ extends CharacterBody3D
 @export var jump_impulse: float = 5
 
 var gravity_vector: Vector3 = Vector3.DOWN
-var gravity_field: GravityField = null
+var gravity_fields: Array = []
+var current_gravity_field: GravityField = null
 
 func _physics_process(delta):
 	# Check directional inputs
@@ -15,7 +16,7 @@ func _physics_process(delta):
 
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
-	gravity_vector =  gravity_field.get_gravity(position) if gravity_field != null else old_gravity_vector
+	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else old_gravity_vector
 	var normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = normal_vector
 
@@ -63,7 +64,20 @@ func _physics_process(delta):
 	move_and_slide()
 
 func add_gravity_field(added_gravity_field):
-	gravity_field = added_gravity_field
+	gravity_fields.append(added_gravity_field)
+	determine_current_gravity_field()
 
 func remove_gravity_field(removed_gravity_field):
-	gravity_field = null
+	gravity_fields.erase(removed_gravity_field)
+	determine_current_gravity_field()
+
+# Ideally would use a max heap / priority queue but since it's small this should be sufficient
+func determine_current_gravity_field():
+	if len(gravity_fields) == 0:
+		current_gravity_field = null
+		return
+
+	current_gravity_field = gravity_fields[0]
+	for gravity_field in gravity_fields:
+		if gravity_field.priority > current_gravity_field.priority:
+			current_gravity_field = gravity_field

@@ -7,6 +7,7 @@ radius = 10.0
 
 [node name="SphericalGravityField" type="Node3D"]
 script = ExtResource("1_pwy2n")
+priority = null
 
 [node name="Collider" type="Area3D" parent="."]
 collision_layer = 4

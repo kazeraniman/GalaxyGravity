@@ -33,3 +33,4 @@ transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107
 shadow_enabled = true
 
 [node name="SphericalGravityField" parent="." instance=ExtResource("2_g2q5u")]
+priority = 0
