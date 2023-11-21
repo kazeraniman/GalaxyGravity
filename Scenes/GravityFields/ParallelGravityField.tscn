@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwf6uy70vj84d"]
+
+[ext_resource type="Script" path="res://Scripts/GravityFields/ParallelGravityField.gd" id="1_umpi2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_25kus"]
+
+[node name="ParallelGravityField" type="Node3D"]
+script = ExtResource("1_umpi2")
+
+[node name="Collider" type="Area3D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
+shape = SubResource("BoxShape3D_25kus")

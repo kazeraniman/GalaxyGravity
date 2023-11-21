@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvgt58chq0msp"]
+[gd_scene load_steps=8 format=3 uid="uid://bvgt58chq0msp"]
 
 [ext_resource type="PackedScene" uid="uid://dp0r43r81em43" path="res://Scenes/Player.tscn" id="1_hg3vi"]
+[ext_resource type="PackedScene" uid="uid://bwf6uy70vj84d" path="res://Scenes/GravityFields/ParallelGravityField.tscn" id="2_64ex5"]
 [ext_resource type="PackedScene" uid="uid://d0lql4w8im2f5" path="res://Scenes/GravityFields/SphericalGravityField.tscn" id="2_g2q5u"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tlsfm"]
@@ -10,10 +11,13 @@ radius = 5.0
 radius = 5.0
 height = 10.0
 
-[node name="Main" type="Node"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_w5a34"]
+size = Vector3(3, 1, 3)
 
-[node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.788011, 0.615662, 0, -0.615662, 0.788011, 0, 6.677, 8.827)
+[sub_resource type="BoxMesh" id="BoxMesh_67rvf"]
+size = Vector3(3, 1, 3)
+
+[node name="Main" type="Node"]
 
 [node name="Ground" type="StaticBody3D" parent="."]
 collision_layer = 2
@@ -25,6 +29,40 @@ shape = SubResource("SphereShape3D_tlsfm")
 [node name="Model" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("SphereMesh_nkok4")
 
+[node name="SphericalGravityField" parent="Ground" instance=ExtResource("2_g2q5u")]
+radius = 10.0
+
+[node name="Ground2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Collider" type="CollisionShape3D" parent="Ground2"]
+shape = SubResource("BoxShape3D_w5a34")
+
+[node name="Model" type="MeshInstance3D" parent="Ground2"]
+mesh = SubResource("BoxMesh_67rvf")
+
+[node name="ParallelGravityField" parent="Ground2" instance=ExtResource("2_64ex5")]
+size = Vector3(3, 6, 3)
+priority = 1
+
+[node name="Ground3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Collider" type="CollisionShape3D" parent="Ground3"]
+shape = SubResource("BoxShape3D_w5a34")
+
+[node name="Model" type="MeshInstance3D" parent="Ground3"]
+mesh = SubResource("BoxMesh_67rvf")
+
+[node name="ParallelGravityField" parent="Ground3" instance=ExtResource("2_64ex5")]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0)
+size = Vector3(3, 6, 3)
+priority = 1
+
 [node name="Player" parent="." instance=ExtResource("1_hg3vi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
@@ -32,5 +70,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0)
 shadow_enabled = true
 
-[node name="SphericalGravityField" parent="." instance=ExtResource("2_g2q5u")]
-priority = 0
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.979575, 0.201078, 0, -0.201078, 0.979575, 7, 6, 12)

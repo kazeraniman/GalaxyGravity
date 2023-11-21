@@ -2,34 +2,25 @@ extends CharacterBody3D
 
 @export var speed: float = 5
 @export var jump_impulse: float = 5
+@export var default_gravity_vector: Vector3 = Vector3(0, -9.8, 0)
 
 var gravity_vector: Vector3 = Vector3.DOWN
 var gravity_fields: Array = []
 var current_gravity_field: GravityField = null
 
 func _physics_process(delta):
-	# Check directional inputs
-	var forwardStrength: float = Input.get_action_strength("move_forward")
-	var backwardStrength: float = Input.get_action_strength("move_backward")
-	var leftStrength: float = Input.get_action_strength("move_left")
-	var rightStrength: float = Input.get_action_strength("move_right")
-
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
-	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else old_gravity_vector
+	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else default_gravity_vector
 	var normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = normal_vector
 
 	# Determine the "ground" movement direction
 	var direction: Vector3 = Vector3.ZERO
-	if forwardStrength > 0:
-		direction.z -= forwardStrength
-	if backwardStrength > 0:
-		direction.z += backwardStrength
-	if leftStrength > 0:
-		direction.x -= leftStrength
-	if rightStrength > 0:
-		direction.x += rightStrength
+	direction.z -= Input.get_action_strength("move_forward")
+	direction.z += Input.get_action_strength("move_backward")
+	direction.x -= Input.get_action_strength("move_left")
+	direction.x += Input.get_action_strength("move_right")
 
 	# Normalize the movement to avoid super-speed diagonals
 	if direction.length() > 1:
