@@ -2,9 +2,9 @@ extends CharacterBody3D
 
 @export var speed: float = 5
 @export var jump_impulse: float = 5
-@export var gravity_field: GravityField
 
 var gravity_vector: Vector3 = Vector3.DOWN
+var gravity_field: GravityField = null
 
 func _physics_process(delta):
 	# Check directional inputs
@@ -15,7 +15,7 @@ func _physics_process(delta):
 
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
-	gravity_vector = gravity_field.get_gravity(position)
+	gravity_vector =  gravity_field.get_gravity(position) if gravity_field != null else old_gravity_vector
 	var normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = normal_vector
 
@@ -61,3 +61,9 @@ func _physics_process(delta):
 	# Move and perform collisions
 	velocity = new_velocity
 	move_and_slide()
+
+func add_gravity_field(added_gravity_field):
+	gravity_field = added_gravity_field
+
+func remove_gravity_field(removed_gravity_field):
+	gravity_field = null

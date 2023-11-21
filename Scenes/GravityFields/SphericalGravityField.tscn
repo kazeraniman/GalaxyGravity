@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://d0lql4w8im2f5"]
+[gd_scene load_steps=3 format=3 uid="uid://d0lql4w8im2f5"]
 
 [ext_resource type="Script" path="res://Scripts/GravityFields/SphericalGravityField.gd" id="1_pwy2n"]
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_44fuu"]
+radius = 10.0
+
 [node name="SphericalGravityField" type="Node3D"]
 script = ExtResource("1_pwy2n")
+
+[node name="Collider" type="Area3D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
+shape = SubResource("SphereShape3D_44fuu")
