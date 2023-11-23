@@ -47,22 +47,31 @@ func _physics_process(delta):
 	direction.x -= Input.get_action_strength("move_left")
 	direction.x += Input.get_action_strength("move_right")
 
-	# Rotate the direction with respect to the camera
-	if direction != Vector3.ZERO:
-		direction = direction.rotated(Vector3.UP, cam_rotation_x)
-
-	# Normalize the movement to avoid super-speed diagonals
-	if direction.length() > 1:
-		direction = direction.normalized()
-
-	# Rotate the player to face the direction of movement
+	# Determine the normal to use based on the floor or the gravity
 	var rotation_normal: Vector3 = get_floor_normal() if is_on_floor() else gravity_normal_vector
 
+	# Odd solution since I was getting -0 sometimes and that would break the gravity rotation later on
+	if is_equal_approx(rotation_normal.x, 0):
+		rotation_normal.x = 0
+	if is_equal_approx(rotation_normal.y, 0):
+		rotation_normal.y = 0
+	if is_equal_approx(rotation_normal.z, 0):
+		rotation_normal.z = 0
+
+	# Rotate the direction with respect to the camera
+	if direction != Vector3.ZERO:
+		direction = direction.rotated(Vector3.UP, cam_rotation_x).normalized()
+
+	# DELETE
+	if direction != Vector3.ZERO:
+		print("first: %s" % direction)
+		print("rotation_normal: %s" % rotation_normal)
+
 	# Rotate direction with respect to gravity or the ground if possible
-	var rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
-	var rotation_angle: float = Vector3.UP.angle_to(rotation_normal)
-	if (rotation_axis != Vector3.ZERO):
-		direction = direction.rotated(rotation_axis, rotation_angle).normalized()
+	var gravity_rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
+	var rotation_angle: float = Vector3.UP.signed_angle_to(rotation_normal, Vector3.UP)
+	if (gravity_rotation_axis != Vector3.ZERO):
+		direction = direction.rotated(gravity_rotation_axis, rotation_angle).normalized()
 
 	# Rotate the model to match the gravity and the movement direction
 	var new_model_container_basis = $ModelContainer.transform.basis
@@ -75,7 +84,7 @@ func _physics_process(delta):
 	new_model_container_basis = new_model_container_basis.orthonormalized()
 
 	if is_on_floor():
-		$ModelContainer.transform.basis = new_model_container_basis
+		$ModelContainer.transform.basis = new_model_container_basis # TODO: Maybe lerp the y rotation anyway on the ground
 	else:
 		var old_model_quat = Quaternion($ModelContainer.transform.basis)
 		var new_model_quat = Quaternion(new_model_container_basis)
@@ -84,6 +93,10 @@ func _physics_process(delta):
 
 	# Determine the scaled, ground velocity
 	var new_velocity: Vector3 = direction * speed
+
+	# DELETE
+	if direction != Vector3.ZERO:
+		print("second: %s" % direction)
 
 	# Retain gravity's influence
 	new_velocity += velocity.project(old_gravity_vector)
