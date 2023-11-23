@@ -5,7 +5,7 @@ extends GravityField
 
 
 func get_gravity(_target_position: Vector3) -> Vector3:
-	return gravity * (Vector3.DOWN * quaternion).normalized()
+	return gravity * (-global_transform.basis.y).normalized()
 
 func set_size(new_size: Vector3):
 	size = new_size
