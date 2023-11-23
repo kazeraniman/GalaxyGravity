@@ -3,17 +3,42 @@ extends CharacterBody3D
 @export var speed: float = 5
 @export var jump_impulse: float = 5
 @export var default_gravity_vector: Vector3 = Vector3(0, -9.8, 0)
+@export var rotation_lerp: float = 0.25
+@export var mouse_cam_x_damp: float = 0.005
+@export var mouse_cam_y_damp: float = 0.005
+@export var joystick_cam_x_damp: float = 0.05
+@export var joystick_cam_y_damp: float = 0.05
 
 var gravity_vector: Vector3 = Vector3.DOWN
 var gravity_fields: Array = []
 var current_gravity_field: GravityField = null
 
+var cam_rotation_x = 0
+var cam_rotation_y = 0
+
+
+func _input(event):
+	if event.is_action_released("restart"):
+		get_tree().reload_current_scene()
+		return
+
+	if event is InputEventMouseMotion && Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		rotate_camera(event.relative.x * mouse_cam_x_damp, -event.relative.y * mouse_cam_y_damp)
+
 func _physics_process(delta):
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
 	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else default_gravity_vector
-	var normal_vector: Vector3 = -(gravity_vector.normalized())
-	up_direction = normal_vector
+	var gravity_normal_vector: Vector3 = -(gravity_vector.normalized())
+	up_direction = gravity_normal_vector
+
+	# Rotate camera
+	var joystick_value: Vector2 = Vector2.ZERO
+	joystick_value.y += Input.get_action_strength("camera_move_up")
+	joystick_value.y -= Input.get_action_strength("camera_move_down")
+	joystick_value.x -= Input.get_action_strength("camera_move_right")
+	joystick_value.x += Input.get_action_strength("camera_move_left")
+	rotate_camera(joystick_value.x * joystick_cam_x_damp, joystick_value.y * joystick_cam_y_damp)
 
 	# Determine the "ground" movement direction
 	var direction: Vector3 = Vector3.ZERO
@@ -22,20 +47,40 @@ func _physics_process(delta):
 	direction.x -= Input.get_action_strength("move_left")
 	direction.x += Input.get_action_strength("move_right")
 
+	# Rotate the direction with respect to the camera
+	if direction != Vector3.ZERO:
+		direction = direction.rotated(Vector3.UP, cam_rotation_x)
+
 	# Normalize the movement to avoid super-speed diagonals
 	if direction.length() > 1:
 		direction = direction.normalized()
 
 	# Rotate the player to face the direction of movement
-	if direction != Vector3.ZERO:
-		$ModelContainer.rotation.y = Vector3.FORWARD.signed_angle_to(direction, Vector3.UP)
+	var rotation_normal: Vector3 = get_floor_normal() if is_on_floor() else gravity_normal_vector
 
-	# Rotate with respect to gravity
-	var rotation_axis: Vector3 = (Vector3.UP.cross(normal_vector)).normalized()
-	var rotation_angle: float = Vector3.UP.angle_to(normal_vector)
+	# Rotate direction with respect to gravity or the ground if possible
+	var rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
+	var rotation_angle: float = Vector3.UP.angle_to(rotation_normal)
 	if (rotation_axis != Vector3.ZERO):
 		direction = direction.rotated(rotation_axis, rotation_angle).normalized()
-		transform.basis = Basis(rotation_axis, rotation_angle)
+
+	# Rotate the model to match the gravity and the movement direction
+	var new_model_container_basis = $ModelContainer.transform.basis
+	new_model_container_basis.y = rotation_normal
+
+	if direction != Vector3.ZERO:
+		new_model_container_basis.z = -direction
+
+	new_model_container_basis.x = rotation_normal.cross(new_model_container_basis.z)
+	new_model_container_basis = new_model_container_basis.orthonormalized()
+
+	if is_on_floor():
+		$ModelContainer.transform.basis = new_model_container_basis
+	else:
+		var old_model_quat = Quaternion($ModelContainer.transform.basis)
+		var new_model_quat = Quaternion(new_model_container_basis)
+		var new_model_lerp_quat = old_model_quat.slerp(new_model_quat, rotation_lerp)
+		$ModelContainer.transform.basis = Basis(new_model_lerp_quat)
 
 	# Determine the scaled, ground velocity
 	var new_velocity: Vector3 = direction * speed
@@ -45,7 +90,7 @@ func _physics_process(delta):
 
 	# Jumping
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
-		new_velocity += jump_impulse * normal_vector
+		new_velocity += jump_impulse * gravity_normal_vector
 
 	# Gravity
 	new_velocity += delta * gravity_vector
@@ -72,3 +117,11 @@ func determine_current_gravity_field():
 	for gravity_field in gravity_fields:
 		if gravity_field.priority > current_gravity_field.priority:
 			current_gravity_field = gravity_field
+
+func rotate_camera(rotation_x: float, rotation_y: float):
+	cam_rotation_x += rotation_x
+	cam_rotation_y += rotation_y
+
+	$CameraPivot.transform.basis = Basis()
+	$CameraPivot.rotate_object_local(Vector3.UP, cam_rotation_x)
+	$CameraPivot.rotate_object_local(Vector3.RIGHT, cam_rotation_y)
