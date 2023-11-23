@@ -62,11 +62,6 @@ func _physics_process(delta):
 	if direction != Vector3.ZERO:
 		direction = direction.rotated(Vector3.UP, cam_rotation_x).normalized()
 
-	# DELETE
-	if direction != Vector3.ZERO:
-		print("first: %s" % direction)
-		print("rotation_normal: %s" % rotation_normal)
-
 	# Rotate direction with respect to gravity or the ground if possible
 	var gravity_rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
 	var rotation_angle: float = Vector3.UP.signed_angle_to(rotation_normal, Vector3.UP)
@@ -83,20 +78,13 @@ func _physics_process(delta):
 	new_model_container_basis.x = rotation_normal.cross(new_model_container_basis.z)
 	new_model_container_basis = new_model_container_basis.orthonormalized()
 
-	if is_on_floor():
-		$ModelContainer.transform.basis = new_model_container_basis # TODO: Maybe lerp the y rotation anyway on the ground
-	else:
-		var old_model_quat = Quaternion($ModelContainer.transform.basis)
-		var new_model_quat = Quaternion(new_model_container_basis)
-		var new_model_lerp_quat = old_model_quat.slerp(new_model_quat, rotation_lerp)
-		$ModelContainer.transform.basis = Basis(new_model_lerp_quat)
+	var old_model_quat = Quaternion($ModelContainer.transform.basis)
+	var new_model_quat = Quaternion(new_model_container_basis)
+	var new_model_lerp_quat = old_model_quat.slerp(new_model_quat, rotation_lerp)
+	$ModelContainer.transform.basis = Basis(new_model_lerp_quat)
 
 	# Determine the scaled, ground velocity
 	var new_velocity: Vector3 = direction * speed
-
-	# DELETE
-	if direction != Vector3.ZERO:
-		print("second: %s" % direction)
 
 	# Retain gravity's influence
 	new_velocity += velocity.project(old_gravity_vector)
