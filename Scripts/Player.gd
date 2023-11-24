@@ -23,7 +23,7 @@ func _input(event):
 		return
 
 	if event is InputEventMouseMotion && Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		rotate_camera(event.relative.x * mouse_cam_x_damp, -event.relative.y * mouse_cam_y_damp)
+		rotate_camera(-event.relative.x * mouse_cam_x_damp, -event.relative.y * mouse_cam_y_damp)
 
 func _physics_process(delta):
 	# Determine gravity and normal
