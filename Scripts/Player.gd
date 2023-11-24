@@ -16,6 +16,14 @@ var current_gravity_field: GravityField = null
 var cam_rotation_x = 0
 var cam_rotation_y = 0
 
+var floor_check_circular_buffer = []
+var floor_check_circular_buffer_current: int = 0
+var floor_check_circular_buffer_current_size: int = 0
+var floor_check_circular_buffer_max_size: int = 3
+
+
+func _init():
+	floor_check_circular_buffer.resize(floor_check_circular_buffer_max_size)
 
 func _input(event):
 	if event.is_action_released("restart"):
@@ -31,6 +39,10 @@ func _physics_process(delta):
 	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else default_gravity_vector
 	var gravity_normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = gravity_normal_vector
+
+	# Determine if we are on the floor
+	add_is_on_floor_noiseless_element()
+	var this_frame_is_on_floor = is_on_floor_noiseless()
 
 	# Rotate camera
 	var joystick_value: Vector2 = Vector2.ZERO
@@ -93,14 +105,14 @@ func _physics_process(delta):
 	new_velocity += velocity.project(old_gravity_vector)
 
 	# Jumping
-	if is_on_floor() and Input.is_action_just_pressed("jump"):
+	if this_frame_is_on_floor and Input.is_action_just_pressed("jump"):
 		new_velocity += jump_impulse * gravity_normal_vector
 
 	# Gravity
 	new_velocity += delta * gravity_vector
 
 	# Play animations
-	if not is_on_floor():
+	if not this_frame_is_on_floor:
 		$ModelContainer/Character/AnimationPlayer.play("falling")
 	elif original_direction != Vector3.ZERO:
 		$ModelContainer/Character/AnimationPlayer.play("walk")
@@ -137,3 +149,15 @@ func rotate_camera(rotation_x: float, rotation_y: float):
 	$CameraPivot.transform.basis = Basis()
 	$CameraPivot.rotate_object_local(Vector3.UP, cam_rotation_x)
 	$CameraPivot.rotate_object_local(Vector3.RIGHT, cam_rotation_y)
+
+func add_is_on_floor_noiseless_element():
+	floor_check_circular_buffer[floor_check_circular_buffer_current] = is_on_floor()
+	floor_check_circular_buffer_current = (floor_check_circular_buffer_current + 1) % floor_check_circular_buffer_max_size
+	floor_check_circular_buffer_current_size = min(floor_check_circular_buffer_current_size + 1, floor_check_circular_buffer_max_size)
+
+func is_on_floor_noiseless() -> bool:
+	var check = false
+	for i in range(0, floor_check_circular_buffer_current_size):
+		check = check or floor_check_circular_buffer[i]
+
+	return check
