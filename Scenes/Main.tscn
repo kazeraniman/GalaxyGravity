@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bvgt58chq0msp"]
+[gd_scene load_steps=9 format=3 uid="uid://bvgt58chq0msp"]
 
 [ext_resource type="PackedScene" uid="uid://dp0r43r81em43" path="res://Scenes/Player.tscn" id="1_hg3vi"]
 [ext_resource type="PackedScene" uid="uid://bwf6uy70vj84d" path="res://Scenes/GravityFields/ParallelGravityField.tscn" id="2_64ex5"]
 [ext_resource type="PackedScene" uid="uid://d0lql4w8im2f5" path="res://Scenes/GravityFields/SphericalGravityField.tscn" id="2_g2q5u"]
+[ext_resource type="PackedScene" uid="uid://tnkemgyggs7t" path="res://Scenes/DeathBox.tscn" id="4_d50sn"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tlsfm"]
 radius = 5.0
@@ -105,3 +106,6 @@ shadow_enabled = true
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 2.7369)
+
+[node name="DeathBox" parent="." instance=ExtResource("4_d50sn")]
+size = Vector3(40, 20, 40.025)
