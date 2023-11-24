@@ -47,6 +47,9 @@ func _physics_process(delta):
 	direction.x -= Input.get_action_strength("move_left")
 	direction.x += Input.get_action_strength("move_right")
 
+	# Maintain a version of the direction prior to any transformations
+	var original_direction = direction
+
 	# Determine the normal to use based on the floor or the gravity
 	var rotation_normal: Vector3 = get_floor_normal() if is_on_floor() else gravity_normal_vector
 
@@ -95,6 +98,14 @@ func _physics_process(delta):
 
 	# Gravity
 	new_velocity += delta * gravity_vector
+
+	# Play animations
+	if not is_on_floor():
+		$ModelContainer/Character/AnimationPlayer.play("falling")
+	elif original_direction != Vector3.ZERO:
+		$ModelContainer/Character/AnimationPlayer.play("walk")
+	else:
+		$ModelContainer/Character/AnimationPlayer.play("idle")
 
 	# Move and perform collisions
 	velocity = new_velocity
