@@ -49,7 +49,7 @@ size = Vector3(3, 6, 3)
 priority = 1
 
 [node name="SideGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 8, 0, -7.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 8, 1, -7.1)
 collision_layer = 2
 collision_mask = 0
 
@@ -62,10 +62,10 @@ mesh = SubResource("BoxMesh_67rvf")
 [node name="ParallelGravityField" parent="SideGravity" instance=ExtResource("2_64ex5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 size = Vector3(3, 6, 3)
-priority = 1
+priority = 2
 
 [node name="SideGravity2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -0.0505929, 0.998719, 0, -0.998719, -0.0505929, 8, 0, 7.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 8, 1, 7.1)
 collision_layer = 2
 collision_mask = 0
 
@@ -78,7 +78,7 @@ mesh = SubResource("BoxMesh_67rvf")
 [node name="ParallelGravityField" parent="SideGravity2" instance=ExtResource("2_64ex5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 size = Vector3(3, 6, 3)
-priority = 1
+priority = 2
 
 [node name="UpGravity" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, 0)
