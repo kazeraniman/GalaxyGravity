@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6hdtw5myuhlo"]
+
+[ext_resource type="AudioStream" uid="uid://bvso0o1s5mtht" path="res://Audio/Music/woods.wav" id="1_lm5ci"]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer"]
+stream = ExtResource("1_lm5ci")
+autoplay = true

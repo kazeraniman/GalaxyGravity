@@ -21,6 +21,9 @@ var floor_check_circular_buffer_current: int = 0
 var floor_check_circular_buffer_current_size: int = 0
 var floor_check_circular_buffer_max_size: int = 3
 
+var this_frame_is_on_floor: bool = true
+var last_frame_is_on_floor: bool = true
+
 
 func _init():
 	floor_check_circular_buffer.resize(floor_check_circular_buffer_max_size)
@@ -42,7 +45,11 @@ func _physics_process(delta):
 
 	# Determine if we are on the floor
 	add_is_on_floor_noiseless_element()
-	var this_frame_is_on_floor = is_on_floor_noiseless()
+	last_frame_is_on_floor = this_frame_is_on_floor
+	this_frame_is_on_floor = is_on_floor_noiseless()
+
+	if not last_frame_is_on_floor and this_frame_is_on_floor:
+		$LandAudio.play()
 
 	# Rotate camera
 	var joystick_value: Vector2 = Vector2.ZERO
@@ -107,6 +114,7 @@ func _physics_process(delta):
 	# Jumping
 	if this_frame_is_on_floor and Input.is_action_just_pressed("jump"):
 		new_velocity += jump_impulse * gravity_normal_vector
+		$JumpAudio.play()
 
 	# Gravity
 	new_velocity += delta * gravity_vector
