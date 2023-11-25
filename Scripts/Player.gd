@@ -1,5 +1,11 @@
 extends CharacterBody3D
 
+@onready var model_container: Node3D = $ModelContainer
+@onready var camera_pivot: Node3D = $CameraPivot
+@onready var character_animation_player: AnimationPlayer = $ModelContainer/Character/AnimationPlayer
+@onready var land_audio: AudioStreamPlayer3D = $LandAudio
+@onready var jump_audio: AudioStreamPlayer3D = $JumpAudio
+
 @export var speed: float = 5
 @export var jump_impulse: float = 5
 @export var default_gravity_vector: Vector3 = Vector3(0, -9.8, 0)
@@ -13,8 +19,8 @@ var gravity_vector: Vector3 = Vector3.DOWN
 var gravity_fields: Array = []
 var current_gravity_field: GravityField = null
 
-var cam_rotation_x = 0
-var cam_rotation_y = 0
+var cam_rotation_x: float = 0
+var cam_rotation_y: float = 0
 
 var floor_check_circular_buffer = []
 var floor_check_circular_buffer_current: int = 0
@@ -28,7 +34,7 @@ var last_frame_is_on_floor: bool = true
 func _init():
 	floor_check_circular_buffer.resize(floor_check_circular_buffer_max_size)
 
-func _input(event):
+func _input(event: InputEvent):
 	if event.is_action_released("restart"):
 		get_tree().reload_current_scene()
 		return
@@ -36,7 +42,7 @@ func _input(event):
 	if event is InputEventMouseMotion && Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		rotate_camera(-event.relative.x * mouse_cam_x_damp, -event.relative.y * mouse_cam_y_damp)
 
-func _physics_process(delta):
+func _physics_process(delta: float):
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
 	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else default_gravity_vector
@@ -49,7 +55,7 @@ func _physics_process(delta):
 	this_frame_is_on_floor = is_on_floor_noiseless()
 
 	if not last_frame_is_on_floor and this_frame_is_on_floor:
-		$LandAudio.play()
+		land_audio.play()
 
 	# Rotate camera
 	var joystick_value: Vector2 = Vector2.ZERO
@@ -67,7 +73,7 @@ func _physics_process(delta):
 	direction.x += Input.get_action_strength("move_right")
 
 	# Maintain a version of the direction prior to any transformations
-	var original_direction = direction
+	var original_direction: Vector3 = direction
 
 	# Determine the normal to use based on the floor or the gravity
 	var rotation_normal: Vector3 = get_floor_normal() if is_on_floor() else gravity_normal_vector
@@ -91,7 +97,7 @@ func _physics_process(delta):
 		direction = direction.rotated(gravity_rotation_axis, rotation_angle).normalized()
 
 	# Rotate the model to match the gravity and the movement direction
-	var new_model_container_basis = $ModelContainer.transform.basis
+	var new_model_container_basis: Basis = model_container.transform.basis
 	new_model_container_basis.y = rotation_normal
 
 	if direction != Vector3.ZERO:
@@ -100,10 +106,10 @@ func _physics_process(delta):
 	new_model_container_basis.x = rotation_normal.cross(new_model_container_basis.z)
 	new_model_container_basis = new_model_container_basis.orthonormalized()
 
-	var old_model_quat = Quaternion($ModelContainer.transform.basis)
-	var new_model_quat = Quaternion(new_model_container_basis)
-	var new_model_lerp_quat = old_model_quat.slerp(new_model_quat, rotation_lerp)
-	$ModelContainer.transform.basis = Basis(new_model_lerp_quat)
+	var old_model_quat: Quaternion = Quaternion(model_container.transform.basis)
+	var new_model_quat: Quaternion = Quaternion(new_model_container_basis)
+	var new_model_lerp_quat: Quaternion = old_model_quat.slerp(new_model_quat, rotation_lerp)
+	model_container.transform.basis = Basis(new_model_lerp_quat)
 
 	# Determine the scaled, ground velocity
 	var new_velocity: Vector3 = direction * speed
@@ -114,28 +120,28 @@ func _physics_process(delta):
 	# Jumping
 	if this_frame_is_on_floor and Input.is_action_just_pressed("jump"):
 		new_velocity += jump_impulse * gravity_normal_vector
-		$JumpAudio.play()
+		jump_audio.play()
 
 	# Gravity
 	new_velocity += delta * gravity_vector
 
 	# Play animations
 	if not this_frame_is_on_floor:
-		$ModelContainer/Character/AnimationPlayer.play("falling")
+		character_animation_player.play("falling")
 	elif original_direction != Vector3.ZERO:
-		$ModelContainer/Character/AnimationPlayer.play("walk")
+		character_animation_player.play("walk")
 	else:
-		$ModelContainer/Character/AnimationPlayer.play("idle")
+		character_animation_player.play("idle")
 
 	# Move and perform collisions
 	velocity = new_velocity
 	move_and_slide()
 
-func add_gravity_field(added_gravity_field):
+func add_gravity_field(added_gravity_field: GravityField):
 	gravity_fields.append(added_gravity_field)
 	determine_current_gravity_field()
 
-func remove_gravity_field(removed_gravity_field):
+func remove_gravity_field(removed_gravity_field: GravityField):
 	gravity_fields.erase(removed_gravity_field)
 	determine_current_gravity_field()
 
@@ -154,9 +160,9 @@ func rotate_camera(rotation_x: float, rotation_y: float):
 	cam_rotation_x += rotation_x
 	cam_rotation_y += rotation_y
 
-	$CameraPivot.transform.basis = Basis()
-	$CameraPivot.rotate_object_local(Vector3.UP, cam_rotation_x)
-	$CameraPivot.rotate_object_local(Vector3.RIGHT, cam_rotation_y)
+	camera_pivot.transform.basis = Basis()
+	camera_pivot.rotate_object_local(Vector3.UP, cam_rotation_x)
+	camera_pivot.rotate_object_local(Vector3.RIGHT, cam_rotation_y)
 
 func add_is_on_floor_noiseless_element():
 	floor_check_circular_buffer[floor_check_circular_buffer_current] = is_on_floor()
@@ -164,7 +170,7 @@ func add_is_on_floor_noiseless_element():
 	floor_check_circular_buffer_current_size = min(floor_check_circular_buffer_current_size + 1, floor_check_circular_buffer_max_size)
 
 func is_on_floor_noiseless() -> bool:
-	var check = false
+	var check: bool = false
 	for i in range(0, floor_check_circular_buffer_current_size):
 		check = check or floor_check_circular_buffer[i]
 
