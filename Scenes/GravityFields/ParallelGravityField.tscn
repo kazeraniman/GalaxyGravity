@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/GravityFields/ParallelGravityField.gd" id="1_umpi2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_25kus"]
-size = Vector3(3, 6, 3)
+resource_local_to_scene = true
 
 [node name="ParallelGravityField" type="Node3D"]
 script = ExtResource("1_umpi2")

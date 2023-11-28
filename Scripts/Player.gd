@@ -45,7 +45,7 @@ func _input(event: InputEvent):
 func _physics_process(delta: float):
 	# Determine gravity and normal
 	var old_gravity_vector: Vector3 = gravity_vector
-	gravity_vector =  current_gravity_field.get_gravity(position) if current_gravity_field != null else default_gravity_vector
+	gravity_vector =  current_gravity_field.get_gravity(global_position) if current_gravity_field != null else default_gravity_vector
 	var gravity_normal_vector: Vector3 = -(gravity_vector.normalized())
 	up_direction = gravity_normal_vector
 

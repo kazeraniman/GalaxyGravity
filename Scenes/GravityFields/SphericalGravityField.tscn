@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/GravityFields/SphericalGravityField.gd" id="1_pwy2n"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_44fuu"]
+resource_local_to_scene = true
 radius = 1.0
 
 [node name="SphericalGravityField" type="Node3D"]

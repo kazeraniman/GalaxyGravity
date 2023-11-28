@@ -33,6 +33,22 @@ mesh = SubResource("SphereMesh_nkok4")
 [node name="SphericalGravityField" parent="Sphere" instance=ExtResource("2_g2q5u")]
 radius = 8.0
 
+[node name="Sphere2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.2141, 0, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="Collider" type="CollisionShape3D" parent="Sphere2"]
+shape = SubResource("SphereShape3D_tlsfm")
+
+[node name="Model" type="MeshInstance3D" parent="Sphere2"]
+mesh = SubResource("SphereMesh_nkok4")
+
+[node name="SphericalGravityField" parent="Sphere2" instance=ExtResource("2_g2q5u")]
+radius = 16.0
+gravity = 2.45
+priority = -1
+
 [node name="DownGravity" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
 collision_layer = 2
@@ -98,11 +114,11 @@ size = Vector3(3, 6, 3)
 priority = 1
 
 [node name="Player" parent="." instance=ExtResource("1_hg3vi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.76242, 0.714218, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.1829, 5.27098, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0)
 shadow_enabled = true
 
 [node name="DeathBox" parent="." instance=ExtResource("4_d50sn")]
-size = Vector3(40, 20, 40.025)
+size = Vector3(115, 40, 40.025)
