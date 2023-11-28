@@ -75,6 +75,10 @@ func _physics_process(delta: float):
 	# Maintain a version of the direction prior to any transformations
 	var original_direction: Vector3 = direction
 
+	# Normalize the direction if required to get rid of faster diagonals
+	if direction.length() > 1:
+		direction = direction.normalized()
+
 	# Determine the normal to use based on the floor or the gravity
 	var rotation_normal: Vector3 = get_floor_normal() if is_on_floor() else gravity_normal_vector
 
@@ -88,13 +92,13 @@ func _physics_process(delta: float):
 
 	# Rotate the direction with respect to the camera
 	if direction != Vector3.ZERO:
-		direction = direction.rotated(Vector3.UP, cam_rotation_x).normalized()
+		direction = direction.rotated(Vector3.UP, cam_rotation_x)
 
 	# Rotate direction with respect to gravity or the ground if possible
 	var gravity_rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
 	var rotation_angle: float = Vector3.UP.signed_angle_to(rotation_normal, Vector3.UP)
 	if (gravity_rotation_axis != Vector3.ZERO):
-		direction = direction.rotated(gravity_rotation_axis, rotation_angle).normalized()
+		direction = direction.rotated(gravity_rotation_axis, rotation_angle)
 
 	# Rotate the model to match the gravity and the movement direction
 	var new_model_container_basis: Basis = model_container.transform.basis
@@ -129,7 +133,7 @@ func _physics_process(delta: float):
 	if not this_frame_is_on_floor:
 		character_animation_player.play("falling")
 	elif original_direction != Vector3.ZERO:
-		character_animation_player.play("walk")
+		character_animation_player.play("walk", -1, clampf(direction.length(), 0, 1))
 	else:
 		character_animation_player.play("idle")
 
