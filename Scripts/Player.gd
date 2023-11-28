@@ -9,7 +9,7 @@ extends CharacterBody3D
 @export var speed: float = 5
 @export var jump_impulse: float = 5
 @export var default_gravity_vector: Vector3 = Vector3(0, -9.8, 0)
-@export var rotation_lerp: float = 0.25
+@export var rotation_lerp: float = 0.1
 @export var mouse_cam_x_damp: float = 0.005
 @export var mouse_cam_y_damp: float = 0.005
 @export var joystick_cam_x_damp: float = 0.05
