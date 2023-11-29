@@ -39,6 +39,9 @@ func _input(event: InputEvent):
 		get_tree().reload_current_scene()
 		return
 
+	if event.is_action_released("toggle_debug"):
+		get_tree().call_group("debug", "toggle_debug")
+
 	if event is InputEventMouseMotion && Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		rotate_camera(-event.relative.x * mouse_cam_x_damp, -event.relative.y * mouse_cam_y_damp)
 
