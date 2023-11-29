@@ -1,38 +1,30 @@
 [gd_scene load_steps=6 format=3 uid="uid://d0lql4w8im2f5"]
 
 [ext_resource type="Script" path="res://Scripts/GravityFields/SphericalGravityField.gd" id="1_pwy2n"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bch0v"]
-transparency = 4
-albedo_color = Color(0, 0.501961, 1, 0.0980392)
-
-[sub_resource type="SphereMesh" id="SphereMesh_5sgkb"]
-material = SubResource("StandardMaterial3D_bch0v")
-radius = 8.0
-height = 16.0
-
-[sub_resource type="Curve" id="Curve_symlq"]
-_data = [Vector2(0, 1), 0.0, -1.0, 0, 1, Vector2(1, 0), -1.0, 0.0, 1, 0]
-point_count = 2
+[ext_resource type="Shader" path="res://Shaders/SphericalGravityField.gdshader" id="2_a3vdm"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_44fuu"]
 resource_local_to_scene = true
 radius = 1.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6lobk"]
+render_priority = 0
+shader = ExtResource("2_a3vdm")
+shader_parameter/primaryColour = Color(0, 0.501961, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_rxdqt"]
+material = SubResource("ShaderMaterial_6lobk")
+radius = 8.0
+height = 16.0
+
 [node name="SphericalGravityField" type="Node3D" groups=["debug"]]
 script = ExtResource("1_pwy2n")
-
-[node name="CPUParticles3D" type="CPUParticles3D" parent="."]
-amount = 3
-lifetime = 3.0
-mesh = SubResource("SphereMesh_5sgkb")
-direction = Vector3(0, 0, 0)
-spread = 0.0
-gravity = Vector3(0, 0, 0)
-scale_amount_curve = SubResource("Curve_symlq")
 
 [node name="Collider" type="Area3D" parent="."]
 collision_layer = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
 shape = SubResource("SphereShape3D_44fuu")
+
+[node name="DebugVisuals" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_rxdqt")

@@ -1,11 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://bwf6uy70vj84d"]
+[gd_scene load_steps=6 format=3 uid="uid://bwf6uy70vj84d"]
 
 [ext_resource type="Script" path="res://Scripts/GravityFields/ParallelGravityField.gd" id="1_umpi2"]
+[ext_resource type="Shader" path="res://Shaders/ParallelGravityField.gdshader" id="2_wdtnk"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_25kus"]
 resource_local_to_scene = true
 
-[node name="ParallelGravityField" type="Node3D"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e1rue"]
+render_priority = 0
+shader = ExtResource("2_wdtnk")
+shader_parameter/primaryColour = Color(0, 0.501961, 1, 1)
+shader_parameter/height = 6.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_7y27s"]
+material = SubResource("ShaderMaterial_e1rue")
+size = Vector3(3, 6, 3)
+
+[node name="ParallelGravityField" type="Node3D" groups=["debug"]]
 script = ExtResource("1_umpi2")
 
 [node name="Collider" type="Area3D" parent="."]
@@ -13,3 +24,6 @@ collision_layer = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
 shape = SubResource("BoxShape3D_25kus")
+
+[node name="DebugVisuals" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_7y27s")
