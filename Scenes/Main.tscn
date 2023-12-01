@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://bvgt58chq0msp"]
+[gd_scene load_steps=13 format=3 uid="uid://bvgt58chq0msp"]
 
 [ext_resource type="PackedScene" uid="uid://dp0r43r81em43" path="res://Scenes/Player.tscn" id="1_hg3vi"]
 [ext_resource type="PackedScene" uid="uid://bwf6uy70vj84d" path="res://Scenes/GravityFields/ParallelGravityField.tscn" id="2_64ex5"]
 [ext_resource type="PackedScene" uid="uid://d0lql4w8im2f5" path="res://Scenes/GravityFields/SphericalGravityField.tscn" id="2_g2q5u"]
 [ext_resource type="PackedScene" uid="uid://tnkemgyggs7t" path="res://Scenes/DeathBox.tscn" id="4_d50sn"]
+[ext_resource type="Texture2D" uid="uid://ccg8t4vcbjo35" path="res://Images/AllSkyFree_Sky_EpicBlueSunset_Equirect.png" id="5_yl5qq"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tlsfm"]
 radius = 5.0
@@ -17,6 +18,16 @@ size = Vector3(3, 1, 3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_67rvf"]
 size = Vector3(3, 1, 3)
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_hq3eo"]
+panorama = ExtResource("5_yl5qq")
+
+[sub_resource type="Sky" id="Sky_1fx8u"]
+sky_material = SubResource("PanoramaSkyMaterial_hq3eo")
+
+[sub_resource type="Environment" id="Environment_6x0kc"]
+background_mode = 2
+sky = SubResource("Sky_1fx8u")
 
 [node name="Main" type="Node"]
 
@@ -34,7 +45,7 @@ mesh = SubResource("SphereMesh_nkok4")
 radius = 8.0
 
 [node name="DownGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 collision_layer = 2
 collision_mask = 0
 
@@ -50,7 +61,7 @@ size = Vector3(3, 6, 3)
 priority = 1
 
 [node name="SideGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 8, 1, -7.1)
+transform = Transform3D(-4.37114e-08, -1, 4.37114e-08, 0, -4.37114e-08, -1, 1, -4.37114e-08, 1.91069e-15, 7.1, 1, 8)
 collision_layer = 2
 collision_mask = 0
 
@@ -66,7 +77,7 @@ size = Vector3(3, 6, 3)
 priority = 2
 
 [node name="SideGravity2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 8, 1, 7.1)
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, -7.1, 1, 8)
 collision_layer = 2
 collision_mask = 0
 
@@ -82,7 +93,7 @@ size = Vector3(3, 6, 3)
 priority = 2
 
 [node name="UpGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 12)
 collision_layer = 2
 collision_mask = 0
 
@@ -98,11 +109,14 @@ size = Vector3(3, 6, 3)
 priority = 1
 
 [node name="Player" parent="." instance=ExtResource("1_hg3vi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.8087, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shadow_enabled = true
 
 [node name="DeathBox" parent="." instance=ExtResource("4_d50sn")]
 size = Vector3(115, 40, 40.025)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_6x0kc")

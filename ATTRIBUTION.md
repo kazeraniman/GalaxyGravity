@@ -5,6 +5,8 @@ In order to track attribution and ensure I don't forget any elements, all the at
 ## Art
 The character model and animations are all taken from [Mixamo](https://www.mixamo.com/#/).
 
+The skybox is provided by [rpgwhitelock](https://github.com/rpgwhitelock/). The repository may be found [here](https://github.com/rpgwhitelock/AllSkyFree_Godot).
+
 ## Audio
 [jump.wav](Audio/Sounds/jump.wav) is provided by [MATRIXXX_](https://freesound.org/people/MATRIXXX_/) at FreeSound. The submission may be found [here](https://freesound.org/people/MATRIXXX_/sounds/458258/).
 

@@ -10,7 +10,7 @@ radius = 1.0
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6lobk"]
 render_priority = 0
 shader = ExtResource("2_a3vdm")
-shader_parameter/primaryColour = Color(0, 0.501961, 1, 1)
+shader_parameter/primaryColour = Color(1, 0, 0.501961, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_rxdqt"]
 material = SubResource("ShaderMaterial_6lobk")

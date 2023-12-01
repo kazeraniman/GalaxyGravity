@@ -9,7 +9,7 @@ resource_local_to_scene = true
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e1rue"]
 render_priority = 0
 shader = ExtResource("2_wdtnk")
-shader_parameter/primaryColour = Color(0, 0.501961, 1, 1)
+shader_parameter/primaryColour = Color(1, 0, 0.501961, 1)
 shader_parameter/height = 6.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_7y27s"]

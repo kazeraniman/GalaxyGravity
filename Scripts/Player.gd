@@ -31,6 +31,10 @@ var this_frame_is_on_floor: bool = true
 var last_frame_is_on_floor: bool = true
 
 
+func _ready():
+	cam_rotation_x = camera_pivot.rotation.y
+	cam_rotation_y = camera_pivot.rotation.x
+
 func _init():
 	floor_check_circular_buffer.resize(floor_check_circular_buffer_max_size)
 
@@ -108,7 +112,7 @@ func _physics_process(delta: float):
 	new_model_container_basis.y = rotation_normal
 
 	if direction != Vector3.ZERO:
-		new_model_container_basis.z = -direction
+		new_model_container_basis.z = direction
 
 	new_model_container_basis.x = rotation_normal.cross(new_model_container_basis.z)
 	new_model_container_basis = new_model_container_basis.orthonormalized()
@@ -164,8 +168,8 @@ func determine_current_gravity_field():
 			current_gravity_field = gravity_field
 
 func rotate_camera(rotation_x: float, rotation_y: float):
-	cam_rotation_x += rotation_x
-	cam_rotation_y += rotation_y
+	cam_rotation_x = fmod(cam_rotation_x + rotation_x, TAU)
+	cam_rotation_y = fmod(cam_rotation_y + rotation_y, TAU)
 
 	camera_pivot.transform.basis = Basis()
 	camera_pivot.rotate_object_local(Vector3.UP, cam_rotation_x)
