@@ -6,7 +6,8 @@ extends CharacterBody3D
 @onready var land_audio: AudioStreamPlayer3D = $LandAudio
 @onready var jump_audio: AudioStreamPlayer3D = $JumpAudio
 
-@export var speed: float = 5
+@export var grounded_speed: float = 5
+@export var air_speed: float = 0.1
 @export var jump_impulse: float = 5
 @export var default_gravity_vector: Vector3 = Vector3(0, -9.8, 0)
 @export var rotation_lerp: float = 0.1
@@ -29,6 +30,8 @@ var floor_check_circular_buffer_max_size: int = 3
 
 var this_frame_is_on_floor: bool = true
 var last_frame_is_on_floor: bool = true
+
+var last_gravityless_velocity: Vector3 = Vector3.ZERO
 
 
 func _ready():
@@ -97,22 +100,38 @@ func _physics_process(delta: float):
 	if is_equal_approx(rotation_normal.z, 0):
 		rotation_normal.z = 0
 
-	# Rotate the direction with respect to the camera
-	if direction != Vector3.ZERO:
-		direction = direction.rotated(Vector3.UP, cam_rotation_x)
+	# Determine the velocity along the x-z plane
+	var new_velocity: Vector3
+	if this_frame_is_on_floor:
+		# Since we're on the ground we can just figure it out normally
+		new_velocity = direction * grounded_speed
+	else:
+		# In the air we want to influence the current direction
+		var air_component: Vector3 = direction * air_speed
+		new_velocity = last_gravityless_velocity + air_component
 
-	# Rotate direction with respect to gravity or the ground if possible
+		# Cap the velocity so we can't infinitely influence it
+		if new_velocity.length() > grounded_speed:
+			new_velocity = new_velocity.normalized() * grounded_speed
+
+	last_gravityless_velocity = new_velocity
+
+	# Rotate the velocity with respect to the camera
+	if new_velocity != Vector3.ZERO:
+		new_velocity = new_velocity.rotated(Vector3.UP, cam_rotation_x)
+
+	# Rotate velocity with respect to gravity or the ground if possible
 	var gravity_rotation_axis: Vector3 = (Vector3.UP.cross(rotation_normal)).normalized()
 	var rotation_angle: float = Vector3.UP.signed_angle_to(rotation_normal, Vector3.UP)
 	if (gravity_rotation_axis != Vector3.ZERO):
-		direction = direction.rotated(gravity_rotation_axis, rotation_angle)
+		new_velocity = new_velocity.rotated(gravity_rotation_axis, rotation_angle)
 
-	# Rotate the model to match the gravity and the movement direction
+	# Rotate the model to match the gravity and the movement velocity
 	var new_model_container_basis: Basis = model_container.transform.basis
 	new_model_container_basis.y = rotation_normal
 
 	if direction != Vector3.ZERO:
-		new_model_container_basis.z = direction
+		new_model_container_basis.z = new_velocity.normalized()
 
 	new_model_container_basis.x = rotation_normal.cross(new_model_container_basis.z)
 	new_model_container_basis = new_model_container_basis.orthonormalized()
@@ -121,9 +140,6 @@ func _physics_process(delta: float):
 	var new_model_quat: Quaternion = Quaternion(new_model_container_basis)
 	var new_model_lerp_quat: Quaternion = old_model_quat.slerp(new_model_quat, rotation_lerp)
 	model_container.transform.basis = Basis(new_model_lerp_quat)
-
-	# Determine the scaled, ground velocity
-	var new_velocity: Vector3 = direction * speed
 
 	# Retain gravity's influence
 	new_velocity += velocity.project(old_gravity_vector)
