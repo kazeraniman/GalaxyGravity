@@ -1,23 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://bvgt58chq0msp"]
+[gd_scene load_steps=21 format=3 uid="uid://bvgt58chq0msp"]
 
+[ext_resource type="PackedScene" uid="uid://b2guels0mmnth" path="res://Scenes/Terrain/SphericalGround.tscn" id="1_7gwns"]
 [ext_resource type="PackedScene" uid="uid://dp0r43r81em43" path="res://Scenes/Player.tscn" id="1_hg3vi"]
-[ext_resource type="PackedScene" uid="uid://bwf6uy70vj84d" path="res://Scenes/GravityFields/ParallelGravityField.tscn" id="2_64ex5"]
-[ext_resource type="PackedScene" uid="uid://d0lql4w8im2f5" path="res://Scenes/GravityFields/SphericalGravityField.tscn" id="2_g2q5u"]
+[ext_resource type="PackedScene" uid="uid://dmlamanqxuxkd" path="res://Scenes/Terrain/FlatGround.tscn" id="2_q3w3o"]
 [ext_resource type="PackedScene" uid="uid://tnkemgyggs7t" path="res://Scenes/DeathBox.tscn" id="4_d50sn"]
 [ext_resource type="Texture2D" uid="uid://ccg8t4vcbjo35" path="res://Images/AllSkyFree_Sky_EpicBlueSunset_Equirect.png" id="5_yl5qq"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_tlsfm"]
-radius = 5.0
-
-[sub_resource type="SphereMesh" id="SphereMesh_nkok4"]
-radius = 5.0
-height = 10.0
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_w5a34"]
-size = Vector3(3, 1, 3)
-
-[sub_resource type="BoxMesh" id="BoxMesh_67rvf"]
-size = Vector3(3, 1, 3)
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_hq3eo"]
 panorama = ExtResource("5_yl5qq")
@@ -29,94 +16,157 @@ sky_material = SubResource("PanoramaSkyMaterial_hq3eo")
 background_mode = 2
 sky = SubResource("Sky_1fx8u")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_00dxv"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_walqr"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 2.705)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_55fy4"]
+resource_local_to_scene = true
+size = Vector3(5, 1, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grkd3"]
+resource_local_to_scene = true
+size = Vector3(5, 1, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2g3hi"]
+resource_local_to_scene = true
+size = Vector3(5, 1, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_d5muh"]
+resource_local_to_scene = true
+size = Vector3(5, 1, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sk510"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_laq2c"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sh6pc"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_b64gc"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_002pa"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hei3l"]
+resource_local_to_scene = true
+size = Vector3(3, 1, 5)
+
 [node name="Main" type="Node"]
 
-[node name="Sphere" type="StaticBody3D" parent="."]
-collision_layer = 2
-collision_mask = 0
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_6x0kc")
 
-[node name="Collider" type="CollisionShape3D" parent="Sphere"]
-shape = SubResource("SphereShape3D_tlsfm")
+[node name="DeathBox" parent="." instance=ExtResource("4_d50sn")]
+size = Vector3(40, 50, 100)
 
-[node name="Model" type="MeshInstance3D" parent="Sphere"]
-mesh = SubResource("SphereMesh_nkok4")
-
-[node name="SphericalGravityField" parent="Sphere" instance=ExtResource("2_g2q5u")]
-radius = 8.0
-
-[node name="DownGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
-collision_layer = 2
-collision_mask = 0
-
-[node name="Collider" type="CollisionShape3D" parent="DownGravity"]
-shape = SubResource("BoxShape3D_w5a34")
-
-[node name="Model" type="MeshInstance3D" parent="DownGravity"]
-mesh = SubResource("BoxMesh_67rvf")
-
-[node name="ParallelGravityField" parent="DownGravity" instance=ExtResource("2_64ex5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-size = Vector3(3, 6, 3)
-priority = 1
-
-[node name="SideGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 4.37114e-08, 0, -4.37114e-08, -1, 1, -4.37114e-08, 1.91069e-15, 7.1, 1, 8)
-collision_layer = 2
-collision_mask = 0
-
-[node name="Collider" type="CollisionShape3D" parent="SideGravity"]
-shape = SubResource("BoxShape3D_w5a34")
-
-[node name="Model" type="MeshInstance3D" parent="SideGravity"]
-mesh = SubResource("BoxMesh_67rvf")
-
-[node name="ParallelGravityField" parent="SideGravity" instance=ExtResource("2_64ex5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-size = Vector3(3, 6, 3)
-priority = 2
-
-[node name="SideGravity2" type="StaticBody3D" parent="."]
-transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, -7.1, 1, 8)
-collision_layer = 2
-collision_mask = 0
-
-[node name="Collider" type="CollisionShape3D" parent="SideGravity2"]
-shape = SubResource("BoxShape3D_w5a34")
-
-[node name="Model" type="MeshInstance3D" parent="SideGravity2"]
-mesh = SubResource("BoxMesh_67rvf")
-
-[node name="ParallelGravityField" parent="SideGravity2" instance=ExtResource("2_64ex5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-size = Vector3(3, 6, 3)
-priority = 2
-
-[node name="UpGravity" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 12)
-collision_layer = 2
-collision_mask = 0
-
-[node name="Collider" type="CollisionShape3D" parent="UpGravity"]
-shape = SubResource("BoxShape3D_w5a34")
-
-[node name="Model" type="MeshInstance3D" parent="UpGravity"]
-mesh = SubResource("BoxMesh_67rvf")
-
-[node name="ParallelGravityField" parent="UpGravity" instance=ExtResource("2_64ex5")]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -2.5, 0)
-size = Vector3(3, 6, 3)
-priority = 1
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("1_hg3vi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shadow_enabled = true
+[node name="Sphere" parent="." instance=ExtResource("1_7gwns")]
 
-[node name="DeathBox" parent="." instance=ExtResource("4_d50sn")]
-size = Vector3(115, 40, 40.025)
+[node name="DownGravity" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_6x0kc")
+[node name="Collider" parent="DownGravity" index="0"]
+shape = SubResource("BoxShape3D_00dxv")
+
+[node name="Model" parent="DownGravity" index="1"]
+mesh = SubResource("BoxMesh_walqr")
+
+[node name="ParallelGravityField" parent="DownGravity" index="2"]
+priority = 1
+
+[node name="SideGravityLeft" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(-4.37114e-08, -1, 4.37114e-08, 0, -4.37114e-08, -1, 1, -4.37114e-08, 1.91069e-15, 7.1, 2, 8)
+
+[node name="Collider" parent="SideGravityLeft" index="0"]
+shape = SubResource("BoxShape3D_55fy4")
+
+[node name="Model" parent="SideGravityLeft" index="1"]
+mesh = SubResource("BoxMesh_grkd3")
+
+[node name="ParallelGravityField" parent="SideGravityLeft" index="2"]
+size = Vector3(5, 6, 5)
+priority = 2
+
+[node name="SideGravityRight" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, -7.1, 2, 8)
+
+[node name="Collider" parent="SideGravityRight" index="0"]
+shape = SubResource("BoxShape3D_2g3hi")
+
+[node name="Model" parent="SideGravityRight" index="1"]
+mesh = SubResource("BoxMesh_d5muh")
+
+[node name="ParallelGravityField" parent="SideGravityRight" index="2"]
+size = Vector3(5, 6, 5)
+priority = 2
+
+[node name="UpGravity" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 13)
+
+[node name="Collider" parent="UpGravity" index="0"]
+shape = SubResource("BoxShape3D_sk510")
+
+[node name="Model" parent="UpGravity" index="1"]
+mesh = SubResource("BoxMesh_laq2c")
+
+[node name="ParallelGravityField" parent="UpGravity" index="2"]
+transform = Transform3D(1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 0, -2.5, 0)
+size = Vector3(3, 6, 6)
+priority = 1
+
+[node name="Sphere2" parent="." instance=ExtResource("1_7gwns")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 23)
+
+[node name="UpWalk" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.3, 35)
+
+[node name="Collider" parent="UpWalk" index="0"]
+shape = SubResource("BoxShape3D_sh6pc")
+
+[node name="Model" parent="UpWalk" index="1"]
+mesh = SubResource("BoxMesh_b64gc")
+
+[node name="ParallelGravityField" parent="UpWalk" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 1)
+size = Vector3(3, 6, 22)
+priority = 1
+
+[node name="FinalPlatform" parent="." instance=ExtResource("2_q3w3o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.8014, 37.002)
+
+[node name="Collider" parent="FinalPlatform" index="0"]
+shape = SubResource("BoxShape3D_002pa")
+
+[node name="Model" parent="FinalPlatform" index="1"]
+mesh = SubResource("BoxMesh_hei3l")
+
+[node name="ParallelGravityField" parent="FinalPlatform" index="2"]
+size = Vector3(3, 6, 5)
+priority = 2
+
+[editable path="Sphere"]
+[editable path="DownGravity"]
+[editable path="SideGravityLeft"]
+[editable path="SideGravityRight"]
+[editable path="UpGravity"]
+[editable path="Sphere2"]
+[editable path="UpWalk"]
+[editable path="FinalPlatform"]
